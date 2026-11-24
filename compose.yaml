@@ -1,0 +1,23 @@
+# Cybersecurity Analyzer - run locally with Docker Compose
+#
+#   docker compose up --build      # build and start (Ctrl+C to stop)
+#   docker compose up -d --build   # same, in the background
+#   docker compose logs -f         # follow logs
+#   docker compose down            # stop and remove the container
+#
+# Then open http://localhost:8000
+
+services:
+  cyber-analyzer:
+    build: .
+    image: cyber-analyzer
+    container_name: cyber-analyzer
+    ports:
+      - "8000:8000"
+    # OPENAI_API_KEY and SEMGREP_APP_TOKEN come from .env in the project root
+    env_file:
+      - .env
+    environment:
+      ENVIRONMENT: production
+      PYTHONUNBUFFERED: "1"
+    restart: unless-stopped

@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1180 710" width="1180" height="710" font-family="Segoe UI, Helvetica, Arial, sans-serif">
+<rect width="100%" height="100%" fill="#ffffff"/>
+<defs>
+<marker id="m0e7490" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#0e7490"/></marker>
+<marker id="m15803d" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#15803d"/></marker>
+<marker id="m1e1e1e" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1e1e1e"/></marker>
+<marker id="m2563eb" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#2563eb"/></marker>
+<marker id="mc2410c" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#c2410c"/></marker>
+</defs>
+<text text-anchor="start" font-size="28" fill="#1e1e1e" font-weight="bold"><tspan x="310" y="37.3">Cybersecurity Analyzer: how a scan works</tspan></text>
+<rect x="280" y="70" width="880" height="620" rx="14" fill="#e5dbff" fill-opacity="0.3" stroke="#8b5cf6" stroke-width="1"/>
+<text text-anchor="start" font-size="20" fill="#6d28d9" font-weight="normal"><tspan x="300" y="101.5">Docker container (port 8000)</tspan></text>
+<rect x="20" y="150" width="180" height="80" rx="14" fill="#a5d8ff" fill-opacity="1.0" stroke="#4a9eed" stroke-width="2"/>
+<text text-anchor="middle" font-size="20" fill="#1e1e1e" font-weight="normal"><tspan x="110.0" y="184.5">Browser</tspan><tspan x="110.0" y="209.5">Next.js page</tspan></text>
+<rect x="330" y="150" width="240" height="80" rx="14" fill="#d0bfff" fill-opacity="1.0" stroke="#8b5cf6" stroke-width="2"/>
+<text text-anchor="middle" font-size="20" fill="#1e1e1e" font-weight="normal"><tspan x="450.0" y="184.5">FastAPI</tspan><tspan x="450.0" y="209.5">POST /api/analyze</tspan></text>
+<polyline points="200,175 330,175" fill="none" stroke="#2563eb" stroke-width="2" marker-end="url(#m2563eb)" stroke-linejoin="round"/>
+<rect x="224.3" y="161.0" width="81.3" height="28" rx="6" fill="#ffffff"/>
+<text text-anchor="middle" font-size="18" fill="#2563eb" font-weight="normal"><tspan x="265.0" y="181.3">1. code</tspan></text>
+<rect x="820" y="150" width="280" height="80" rx="14" fill="#c3fae8" fill-opacity="1.0" stroke="#06b6d4" stroke-width="2"/>
+<text text-anchor="middle" font-size="20" fill="#1e1e1e" font-weight="normal"><tspan x="960.0" y="184.5">Temp .py file</tspan><tspan x="960.0" y="209.5">code written to disk</tspan></text>
+<polyline points="570,190 820,190" fill="none" stroke="#1e1e1e" stroke-width="2" marker-end="url(#m1e1e1e)" stroke-linejoin="round"/>
+<rect x="629.6" y="176.0" width="130.8" height="28" rx="6" fill="#ffffff"/>
+<text text-anchor="middle" font-size="18" fill="#1e1e1e" font-weight="normal"><tspan x="695.0" y="196.3">2. save file</tspan></text>
+<rect x="330" y="340" width="240" height="90" rx="14" fill="#d0bfff" fill-opacity="1.0" stroke="#8b5cf6" stroke-width="2"/>
+<text text-anchor="middle" font-size="20" fill="#1e1e1e" font-weight="normal"><tspan x="450.0" y="379.5">Security Researcher</tspan><tspan x="450.0" y="404.5">agent (gpt-4.1-mini)</tspan></text>
+<polyline points="450,230 450,340" fill="none" stroke="#1e1e1e" stroke-width="2" marker-end="url(#m1e1e1e)" stroke-linejoin="round"/>
+<rect x="384.6" y="271.0" width="130.8" height="28" rx="6" fill="#ffffff"/>
+<text text-anchor="middle" font-size="18" fill="#1e1e1e" font-weight="normal"><tspan x="450.0" y="291.3">3. run agent</tspan></text>
+<rect x="820" y="340" width="280" height="90" rx="14" fill="#ffd8a8" fill-opacity="1.0" stroke="#f59e0b" stroke-width="2"/>
+<text text-anchor="middle" font-size="20" fill="#1e1e1e" font-weight="normal"><tspan x="960.0" y="379.5">Semgrep MCP server</tspan><tspan x="960.0" y="404.5">semgrep_scan (auto)</tspan></text>
+<polyline points="570,365 820,365" fill="none" stroke="#c2410c" stroke-width="2" marker-end="url(#mc2410c)" stroke-linejoin="round"/>
+<rect x="629.6" y="351.0" width="130.8" height="28" rx="6" fill="#ffffff"/>
+<text text-anchor="middle" font-size="18" fill="#c2410c" font-weight="normal"><tspan x="695.0" y="371.3">4. scan once</tspan></text>
+<polyline points="820,410 570,410" fill="none" stroke="#c2410c" stroke-width="2" stroke-dasharray="8 6" marker-end="url(#mc2410c)" stroke-linejoin="round"/>
+<rect x="634.5" y="396.0" width="120.9" height="28" rx="6" fill="#ffffff"/>
+<text text-anchor="middle" font-size="18" fill="#c2410c" font-weight="normal"><tspan x="695.0" y="416.3">5. findings</tspan></text>
+<polyline points="960,340 960,230" fill="none" stroke="#0e7490" stroke-width="2" stroke-dasharray="8 6" marker-end="url(#m0e7490)" stroke-linejoin="round"/>
+<rect x="929.2" y="271.0" width="61.5" height="28" rx="6" fill="#ffffff"/>
+<text text-anchor="middle" font-size="18" fill="#0e7490" font-weight="normal"><tspan x="960.0" y="291.3">reads</tspan></text>
+<rect x="20" y="345" width="180" height="80" rx="14" fill="#ffd8a8" fill-opacity="1.0" stroke="#f59e0b" stroke-width="2"/>
+<text text-anchor="middle" font-size="20" fill="#1e1e1e" font-weight="normal"><tspan x="110.0" y="392.0">OpenAI API</tspan></text>
+<polyline points="330,385 200,385" fill="none" stroke="#c2410c" stroke-width="2" marker-end="url(#mc2410c)" marker-start="url(#mc2410c)" stroke-linejoin="round"/>
+<text text-anchor="middle" font-size="18" fill="#c2410c" font-weight="normal"><tspan x="265.0" y="369.3">6. AI review</tspan></text>
+<rect x="330" y="540" width="240" height="90" rx="14" fill="#b2f2bb" fill-opacity="1.0" stroke="#22c55e" stroke-width="2"/>
+<text text-anchor="middle" font-size="20" fill="#1e1e1e" font-weight="normal"><tspan x="450.0" y="579.5">SecurityReport</tspan><tspan x="450.0" y="604.5">sorted by CVSS</tspan></text>
+<polyline points="450,430 450,540" fill="none" stroke="#15803d" stroke-width="2" marker-end="url(#m15803d)" stroke-linejoin="round"/>
+<rect x="399.4" y="471.0" width="101.1" height="28" rx="6" fill="#ffffff"/>
+<text text-anchor="middle" font-size="18" fill="#15803d" font-weight="normal"><tspan x="450.0" y="491.3">7. report</tspan></text>
+<polyline points="330,585 240,585 240,215 200,215" fill="none" stroke="#15803d" stroke-width="2" stroke-dasharray="8 6" marker-end="url(#m15803d)" stroke-linejoin="round"/>
+<text text-anchor="start" font-size="18" fill="#15803d" font-weight="normal"><tspan x="20" y="577.5">8. JSON response</tspan></text>
+<text text-anchor="start" font-size="18" fill="#757575" font-weight="normal"><tspan x="620" y="577.5">Semgrep finds known patterns;</tspan><tspan x="620" y="600.0">the AI adds issues it missed.</tspan></text>
+</svg>

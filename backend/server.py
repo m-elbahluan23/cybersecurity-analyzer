@@ -1,10 +1,12 @@
+import json
 import tempfile  # to create a file on disk for semgrep_scan
 import os
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import StreamingResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
-from typing import List
+from typing import AsyncIterator, List
 from dotenv import load_dotenv
 from agents import Agent, Runner, trace
 
@@ -81,34 +83,75 @@ def create_security_agent(semgrep_server) -> Agent:
     )
 
 
-async def run_security_analysis(code: str) -> SecurityReport:
-    """Execute the security analysis workflow."""
-    with trace("Security Researcher"):
-        async with create_semgrep_server() as semgrep:
-            agent = create_security_agent(semgrep)
-            try:
-                with tempfile.NamedTemporaryFile(  # Creates a temporary file locally with teh code
-                    mode="w", suffix=".py", delete=False
-                ) as temp:
-                    temp.write(code)
-                    temp_path = temp.name
-                try:
-                    result = await Runner.run(
-                        agent, input=get_analysis_prompt(code, temp_path)
-                    )  # Sends code and path to the file
-                    # Changed the following two lines to sort by CVSS in descending order
-                    sorted_report = result.final_output_as(SecurityReport)
-                    sorted_report.issues.sort(key=lambda issue: issue.cvss_score, reverse=True)
+def step(step_id: str, status: str) -> dict:
+    """Progress event for one pipeline step (status: active | done | skipped)."""
+    return {"type": "step", "id": step_id, "status": status}
 
-                    return sorted_report
-                finally:
-                    try:
-                        os.unlink(temp_path)
-                    except OSError:
-                        pass
-            except Exception as err:
-                print(f"Unexpected {err=}, {type(err)=}")
-                raise
+
+async def run_security_analysis(code: str) -> AsyncIterator[dict]:
+    """
+    Execute the security analysis workflow, yielding progress events.
+
+    Step ids (in order): received, saved, mcp, agent, scan, findings, review, report.
+    The last event is {"type": "result", "report": SecurityReport}.
+    """
+    yield step("received", "done")
+
+    with tempfile.NamedTemporaryFile(  # Creates a temporary file locally with the code
+        mode="w", suffix=".py", delete=False
+    ) as temp:
+        temp.write(code)
+        temp_path = temp.name
+    yield step("saved", "done")
+
+    try:
+        with trace("Security Researcher"):
+            yield step("mcp", "active")
+            async with create_semgrep_server() as semgrep:
+                yield step("mcp", "done")
+                yield step("agent", "active")
+                agent = create_security_agent(semgrep)
+
+                # Sends code and path to the file; stream events to track the agent's steps
+                result = Runner.run_streamed(agent, input=get_analysis_prompt(code, temp_path))
+                scanned = False
+                reviewing = False
+                async for event in result.stream_events():
+                    if event.type != "run_item_stream_event":
+                        continue
+                    if event.name == "tool_called" and not scanned:
+                        yield step("agent", "done")
+                        yield step("scan", "active")
+                    elif event.name == "tool_output" and not scanned:
+                        scanned = True
+                        yield step("scan", "done")
+                        yield step("findings", "done")
+                        yield step("review", "active")
+                        reviewing = True
+
+                if not scanned:  # The agent answered without calling Semgrep
+                    yield step("agent", "done")
+                    yield step("scan", "skipped")
+                    yield step("findings", "skipped")
+                if not reviewing:
+                    yield step("review", "active")
+                yield step("review", "done")
+
+                yield step("report", "active")
+                # Sort issues by CVSS in descending order
+                report = result.final_output_as(SecurityReport)
+                report.issues.sort(key=lambda issue: issue.cvss_score, reverse=True)
+                report = format_analysis_response(code, report)
+                yield step("report", "done")
+                yield {"type": "result", "report": report.model_dump()}
+    except Exception as err:
+        print(f"Unexpected {err=}, {type(err)=}")
+        raise
+    finally:
+        try:
+            os.unlink(temp_path)
+        except OSError:
+            pass
 
 
 def format_analysis_response(code: str, report: SecurityReport) -> SecurityReport:
@@ -129,10 +172,39 @@ async def analyze_code(request: AnalyzeRequest) -> SecurityReport:
     check_api_keys()
 
     try:
-        report = await run_security_analysis(request.code)
-        return format_analysis_response(request.code, report)
+        report = None
+        async for event in run_security_analysis(request.code):  # run to completion (cleanup)
+            if event["type"] == "result":
+                report = SecurityReport(**event["report"])
+        if report is None:
+            raise RuntimeError("Analysis finished without a report")
+        return report
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Analysis failed: {str(e)}")
+
+
+@app.post("/api/analyze/stream")
+async def analyze_code_stream(request: AnalyzeRequest) -> StreamingResponse:
+    """
+    Same analysis as /api/analyze, streamed as Server-Sent Events.
+
+    Each event is `data: <json>`: step progress, then a final `result` (or `error`).
+    """
+    validate_request(request)
+    check_api_keys()
+
+    async def event_stream():
+        try:
+            async for event in run_security_analysis(request.code):
+                yield f"data: {json.dumps(event)}\n\n"
+        except Exception as e:
+            yield f"data: {json.dumps({'type': 'error', 'message': f'Analysis failed: {e}'})}\n\n"
+
+    return StreamingResponse(
+        event_stream(),
+        media_type="text/event-stream",
+        headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
+    )
 
 
 @app.get("/health")
